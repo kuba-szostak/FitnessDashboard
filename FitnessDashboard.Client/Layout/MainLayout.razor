@@ -1,16 +1,19 @@
-﻿@inherits LayoutComponentBase
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+﻿@using MudBlazor
+@inherits LayoutComponentBase
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+<MudThemeProvider/>
+<MudDialogProvider/>
+<MudSnackbarProvider/>
 
-        <article class="content px-4">
+<MudLayout>
+    <MudAppBar>
+        <MudText Typo="Typo.h6">Fitness Gear Dashboard</MudText>
+    </MudAppBar>
+    
+    <MudMainContent>
+        <MudContainer maxWidth="MaxWidth.Medium" Class="mt-4">
             @Body
-        </article>
-    </main>
-</div>
+        </MudContainer>
+    </MudMainContent>
+    
+</MudLayout>
