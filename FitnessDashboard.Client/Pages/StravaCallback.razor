@@ -1,0 +1,77 @@
+﻿@page "/strava-callback"
+@using Microsoft.AspNetCore.WebUtilities
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+
+<PageTitle>Strava Authorization</PageTitle>
+
+<MudContainer MaxWidth="@MaxWidth.Small" Class="mt-16">
+    <MudPaper Class="pa-8 text-center">
+        @if (_error != null)
+        {
+            <MudIcon Icon="@Icons.Material.Filled.Error" Color="@Color.Error" Size="@Size.Large" Class="mb-4" />
+            <MudText Typo="@Typo.h5" GutterBottom="true">Authorization Failed</MudText>
+            <MudText Typo="@Typo.body1" Class="mb-6">@_error</MudText>
+            <MudButton Variant="@Variant.Filled" Color="@Color.Primary" OnClick="@(() => NavigationManager.NavigateTo("/settings"))">Back to Settings</MudButton>
+        }
+        else
+        {
+            <MudProgressCircular Color="@Color.Primary" Indeterminate="true" Size="@Size.Large" Class="mb-4" />
+            <MudText Typo="@Typo.h5">Authorizing with Strava...</MudText>
+            <MudText Typo="@Typo.body1">Please wait while we complete the connection.</MudText>
+        }
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private string? _error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        var query = QueryHelpers.ParseQuery(uri.Query);
+
+        if (query.TryGetValue("error", out var errorValues))
+        {
+            _error = errorValues.ToString();
+            return;
+        }
+
+        if (query.TryGetValue("code", out var codeValues))
+        {
+            var code = codeValues.ToString();
+            try
+            {
+                var response = await Http.PostAsJsonAsync("api/Athlete/exchange-code", code);
+                if (response.IsSuccessStatusCode)
+                {
+                    Snackbar.Add("Successfully connected to Strava!", Severity.Success);
+                    NavigationManager.NavigateTo("/settings");
+                }
+                else
+                {
+                    try 
+                    {
+                        var errorResponse = await response.Content.ReadFromJsonAsync<ErrorResponse>();
+                        _error = errorResponse?.Message ?? "Failed to exchange authorization code.";
+                    }
+                    catch
+                    {
+                        _error = "Failed to exchange authorization code (Unknown error).";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _error = $"An error occurred: {ex.Message}";
+            }
+        }
+        else
+        {
+            _error = "No authorization code received.";
+        }
+    }
+
+    private record ErrorResponse(string Message);
+}

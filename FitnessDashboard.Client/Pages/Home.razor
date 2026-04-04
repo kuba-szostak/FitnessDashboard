@@ -3,15 +3,20 @@
 
 <PageTitle>Gear Maintenance</PageTitle>
 
-<MudText Typo="Typo.h4" GutterBottom="true">Your Gear Status</MudText>
+<MudText Typo="@Typo.h4" GutterBottom="true">Your Gear Status</MudText>
 
-@if (_gears == null)
+@if (_loading)
 {
-    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+    <MudProgressCircular Color="@Color.Primary" Indeterminate="true" />
+}
+else if (!_gears.Any())
+{
+    <MudAlert Severity="@Severity.Info" Class="mb-4">No gear found. Please ensure you have connected your Strava account in the settings and wait for the sync to complete (it runs every 5 minutes).</MudAlert>
+    <MudButton Variant="@Variant.Filled" Color="@Color.Primary" Href="/settings">Go to Settings</MudButton>
 }
 else
 {
-    <MudTable Items="@_gears" Hover="true" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info">
+    <MudTable Items="@_gears" Hover="true" Breakpoint="@Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="@Color.Info">
         <HeaderContent>
             <MudTh>Name</MudTh>
             <MudTh>Distance (km)</MudTh>
@@ -24,7 +29,7 @@ else
             <MudTd DataLabel="Primary">
                 @if (context.IsPrimary)
                 {
-                    <MudIcon Icon="@Icons.Material.Filled.Check" Color="Color.Success" />
+                    <MudIcon Icon="@Icons.Material.Filled.Check" Color="@Color.Success" />
                 }
             </MudTd>
             <MudTd DataLabel="Maintenance Tasks">
@@ -39,7 +44,7 @@ else
                 }
                 else
                 {
-                    <MudText Typo="Typo.body2">No tasks</MudText>
+                    <MudText Typo="@Typo.body2">No tasks</MudText>
                 }
             </MudTd>
         </RowTemplate>
@@ -47,18 +52,19 @@ else
 }
 
 @code {
-    private List<GearDto>? _gears;
+    private List<GearDto> _gears = new List<GearDto>();
     private bool _loading = true;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            _gears = await Http.GetFromJsonAsync<List<GearDto>>("api/Gear");
+            _gears = await Http.GetFromJsonAsync<List<GearDto>>("api/Gear") ?? new List<GearDto>();
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error fetching gears: {ex.Message}");
+            _gears = new List<GearDto>();
         }
         finally
         {
@@ -66,8 +72,9 @@ else
         }
     }
 
-    private Color GetStatusColor(string status)
+    private Color GetStatusColor(string? status)
     {
+        if (status == null) return Color.Default;
         return status.ToLower() switch
         {
             "healthy" => Color.Success,

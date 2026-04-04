@@ -7,4 +7,5 @@ public interface IStravaService
     Task<IEnumerable<Activity>> GetActivitiesAsync(Athlete athlete, DateTime? after = null);
     Task<IEnumerable<Gear>> GetAthleteGearsAsync(Athlete athlete);
     Task<Athlete> RefreshTokenAsync(Athlete athlete);
+    Task<Athlete> ExchangeCodeAsync(string code);
 }

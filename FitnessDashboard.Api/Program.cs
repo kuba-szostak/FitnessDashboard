@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using FitnessDashboard.Application.Interfaces;
 using FitnessDashboard.Application.Services;
 using FitnessDashboard.Infrastructure.Configuration;
@@ -8,6 +10,32 @@ using FitnessDashboard.Infrastructure.Weather;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Load .env file for local development
+var envPath = Path.Combine(Directory.GetCurrentDirectory(), ".env");
+if (!File.Exists(envPath))
+{
+    envPath = Path.Combine(Directory.GetCurrentDirectory(), "..", ".env");
+}
+
+if (File.Exists(envPath))
+{
+    foreach (var line in File.ReadAllLines(envPath))
+    {
+        var parts = line.Split('=', 2);
+        if (parts.Length == 2)
+        {
+            var key = parts[0].Trim();
+            var value = parts[1].Trim();
+            
+            if (key == "STRAVA_CLIENT_ID") key = "Strava__ClientId";
+            if (key == "STRAVA_CLIENT_SECRET") key = "Strava__ClientSecret";
+            if (key == "WEATHER_API_KEY") key = "Weather__ApiKey";
+            
+            Environment.SetEnvironmentVariable(key, value);
+        }
+    }
+}
 
 // Add services to the container.
 builder.Services.AddControllers();

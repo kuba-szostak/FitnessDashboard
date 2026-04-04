@@ -3,6 +3,8 @@ using FitnessDashboard.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FitnessDashboard.Application.Interfaces;
+using FitnessDashboard.Infrastructure.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace FitnessDashboard.Api.Controllers;
 
@@ -12,17 +14,56 @@ public class AthleteController : ControllerBase
 {
     private readonly AppDbContext _context;
     private readonly IStravaService _stravaService;
+    private readonly StravaSettings _settings;
 
-    public AthleteController(AppDbContext context, IStravaService stravaService)
+    public AthleteController(AppDbContext context, IStravaService stravaService, IOptions<StravaSettings> settings)
     {
         _context = context;
         _stravaService = stravaService;
+        _settings = settings.Value;
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Athlete>>> GetAthletes()
     {
         return await _context.Athletes.ToListAsync();
+    }
+
+    [HttpGet("auth-url")]
+    public IActionResult GetAuthUrl([FromQuery] string redirectUri)
+    {
+        var url = $"https://www.strava.com/oauth/authorize?client_id={_settings.ClientId}&redirect_uri={redirectUri}&response_type=code&scope=read,activity:read_all,profile:read_all";
+        return Ok(new { Url = url });
+    }
+
+    [HttpPost("exchange-code")]
+    public async Task<IActionResult> ExchangeCode([FromBody] string code)
+    {
+        try
+        {
+            var athlete = await _stravaService.ExchangeCodeAsync(code);
+            var existing = await _context.Athletes.FindAsync(athlete.Id);
+            if (existing != null)
+            {
+                existing.AccessToken = athlete.AccessToken;
+                existing.RefreshToken = athlete.RefreshToken;
+                existing.TokenExpiresAt = athlete.TokenExpiresAt;
+                existing.FirstName = athlete.FirstName;
+                existing.LastName = athlete.LastName;
+                existing.ProfileImageUrl = athlete.ProfileImageUrl;
+            }
+            else
+            {
+                _context.Athletes.Add(athlete);
+            }
+
+            await _context.SaveChangesAsync();
+            return Ok(athlete);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
     }
 
     [HttpPost("setup-test")]

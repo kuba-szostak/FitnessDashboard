@@ -20,6 +20,7 @@
     <ProjectReference Include="..\FitnessDashboard.Infrastructure\FitnessDashboard.Infrastructure.csproj" />
     <ProjectReference Include="..\FitnessDashboard.Application\FitnessDashboard.Application.csproj" />
     <ProjectReference Include="..\FitnessDashboard.Shared\FitnessDashboard.Shared.csproj" />
+    <ProjectReference Include="..\FitnessDashboard.Client\FitnessDashboard.Client.csproj" />
   </ItemGroup>
 
 </Project>

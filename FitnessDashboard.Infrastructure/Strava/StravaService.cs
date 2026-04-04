@@ -2,6 +2,8 @@
 using FitnessDashboard.Domain.Entities;
 using FitnessDashboard.Infrastructure.Configuration;
 using Microsoft.Extensions.Options;
+using System.Collections.Generic;
+using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 
@@ -20,6 +22,8 @@ public class StravaService : IStravaService
 
     public async Task<IEnumerable<Activity>> GetActivitiesAsync(Athlete athlete, DateTime? after = null)
     {
+        await RefreshTokenAsync(athlete);
+
         var url = "athlete/activities";
         if (after.HasValue)
         {
@@ -46,6 +50,8 @@ public class StravaService : IStravaService
 
     public async Task<IEnumerable<Gear>> GetAthleteGearsAsync(Athlete athlete)
     {
+        await RefreshTokenAsync(athlete);
+        
         _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", athlete.AccessToken);
         
         // Strava API: GET https://www.strava.com/api/v3/athlete
@@ -91,13 +97,21 @@ public class StravaService : IStravaService
             return athlete;
         }
 
-        var response = await _httpClient.PostAsJsonAsync("https://www.strava.com/oauth/token", new
+        // Only refresh if it's expired or about to expire (within 5 minutes)
+        if (athlete.TokenExpiresAt > DateTime.UtcNow.AddMinutes(5))
         {
-            client_id = _settings.ClientId,
-            client_secret = _settings.ClientSecret,
-            refresh_token = athlete.RefreshToken,
-            grant_type = "refresh_token"
-        });
+            return athlete;
+        }
+
+        var dict = new Dictionary<string, string>
+        {
+            { "client_id", _settings.ClientId },
+            { "client_secret", _settings.ClientSecret },
+            { "refresh_token", athlete.RefreshToken },
+            { "grant_type", "refresh_token" }
+        };
+
+        var response = await _httpClient.PostAsync("https://www.strava.com/oauth/token", new FormUrlEncodedContent(dict));
 
         if (response.IsSuccessStatusCode)
         {
@@ -112,7 +126,49 @@ public class StravaService : IStravaService
 
         return athlete;
     }
+
+    public async Task<Athlete> ExchangeCodeAsync(string code)
+    {
+        var dict = new Dictionary<string, string>
+        {
+            { "client_id", _settings.ClientId },
+            { "client_secret", _settings.ClientSecret },
+            { "code", code },
+            { "grant_type", "authorization_code" }
+        };
+
+        var response = await _httpClient.PostAsync("https://www.strava.com/oauth/token", new FormUrlEncodedContent(dict));
+        response.EnsureSuccessStatusCode();
+
+        var exchangeResponse = await response.Content.ReadFromJsonAsync<StravaExchangeResponse>();
+        if (exchangeResponse == null) throw new Exception("Failed to exchange code");
+
+        return new Athlete
+        {
+            Id = exchangeResponse.Athlete.Id,
+            FirstName = exchangeResponse.Athlete.FirstName,
+            LastName = exchangeResponse.Athlete.LastName,
+            ProfileImageUrl = exchangeResponse.Athlete.Profile,
+            AccessToken = exchangeResponse.AccessToken,
+            RefreshToken = exchangeResponse.RefreshToken,
+            TokenExpiresAt = DateTime.UtcNow.AddSeconds(exchangeResponse.ExpiresIn)
+        };
+    }
 }
+
+public record StravaExchangeResponse(
+    [property: JsonPropertyName("access_token")] string AccessToken,
+    [property: JsonPropertyName("refresh_token")] string RefreshToken,
+    [property: JsonPropertyName("expires_in")] int ExpiresIn,
+    [property: JsonPropertyName("athlete")] StravaAthleteSummary Athlete
+);
+
+public record StravaAthleteSummary(
+    [property: JsonPropertyName("id")] long Id,
+    [property: JsonPropertyName("firstname")] string FirstName,
+    [property: JsonPropertyName("lastname")] string LastName,
+    [property: JsonPropertyName("profile")] string Profile
+);
 
 public record StravaTokenResponse(
     [property: JsonPropertyName("access_token")] string AccessToken,
