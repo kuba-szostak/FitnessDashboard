@@ -1,5 +1,6 @@
 using FitnessDashboard.Application.Interfaces;
 using FitnessDashboard.Application.Services;
+using FitnessDashboard.Infrastructure.Configuration;
 using FitnessDashboard.Infrastructure.Persistence;
 using FitnessDashboard.Infrastructure.Strava;
 using FitnessDashboard.Infrastructure.Sync;
@@ -10,6 +11,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
+
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+    .AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables();
+
+builder.Services.Configure<StravaSettings>(builder.Configuration.GetSection("Strava"));
+builder.Services.Configure<WeatherSettings>(builder.Configuration.GetSection("Weather"));
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 

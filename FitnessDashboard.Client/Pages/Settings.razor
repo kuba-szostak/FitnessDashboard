@@ -1,0 +1,78 @@
+﻿@page "/settings"
+@using FitnessDashboard.Domain.Entities
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+
+<PageTitle>Strava Settings</PageTitle>
+
+<MudText Typo="Typo.h4" GutterBottom="true">Strava Connection</MudText>
+
+<MudPaper Class="pa-4 mt-4">
+    <MudText Typo="Typo.h6">Connect Your Account</MudText>
+    <MudText Typo="Typo.body2" Class="mb-4">To fetch your gear and activities, you need to provide a Strava Access Token. (In a production app, this would use the OAuth flow).</MudText>
+    
+    <MudForm @ref="form" @bind-IsValid="@success">
+        <MudTextField T="long" Label="Strava Athlete ID" @bind-Value="athlete.Id" Required="true" />
+        <MudTextField T="string" Label="First Name" @bind-Value="athlete.FirstName" Required="true" />
+        <MudTextField T="string" Label="Last Name" @bind-Value="athlete.LastName" Required="true" />
+        <MudTextField T="string" Label="Access Token" @bind-Value="athlete.AccessToken" Required="true" HelperText="Obtain from Strava API Settings" />
+        <MudTextField T="string" Label="Refresh Token" @bind-Value="athlete.RefreshToken" Required="false" />
+        
+        <div class="d-flex align-center justify-space-between mt-6">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!success)" OnClick="SaveAthlete">Save & Sync</MudButton>
+        </div>
+    </MudForm>
+</MudPaper>
+
+@if (athletes != null && athletes.Any())
+{
+    <MudText Typo="Typo.h6" Class="mt-8 mb-4">Connected Accounts</MudText>
+    @foreach (var a in athletes)
+    {
+        <MudCard Class="mb-2">
+            <MudCardContent>
+                <MudText>@a.FirstName @a.LastName (ID: @a.Id)</MudText>
+                <MudText Typo="Typo.caption">Token: @(a.AccessToken.Length > 10 ? a.AccessToken.Substring(0, 10) : a.AccessToken)...</MudText>
+            </MudCardContent>
+        </MudCard>
+    }
+}
+
+@code {
+    private bool success;
+    private MudForm form;
+    private Athlete athlete = new Athlete();
+    private List<Athlete> athletes;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAthletes();
+    }
+
+    private async Task LoadAthletes()
+    {
+        try
+        {
+            athletes = await Http.GetFromJsonAsync<List<Athlete>>("api/Athlete");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    private async Task SaveAthlete()
+    {
+        var response = await Http.PostAsJsonAsync("api/Athlete/setup-test", athlete);
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add("Athlete saved successfully! Syncing will start shortly.", Severity.Success);
+            await LoadAthletes();
+            athlete = new Athlete();
+        }
+        else
+        {
+            Snackbar.Add("Error saving athlete.", Severity.Error);
+        }
+    }
+}

@@ -47,6 +47,25 @@ public class StravaSyncWorker : BackgroundService
                 {
                     try
                     {
+                        // 1. Sync Gear first (new bikes/shoes)
+                        var gears = await stravaService.GetAthleteGearsAsync(athlete);
+                        foreach (var gear in gears)
+                        {
+                            var existingGear = await context.Gears.FirstOrDefaultAsync(g => g.Id == gear.Id, stoppingToken);
+                            if (existingGear == null)
+                            {
+                                context.Gears.Add(gear);
+                            }
+                            else
+                            {
+                                existingGear.Name = gear.Name;
+                                // We don't overwrite distance here, we let activity sync handle it to account for weather factor
+                                // unless it's a new athlete with no activities yet.
+                            }
+                        }
+                        await context.SaveChangesAsync(stoppingToken);
+
+                        // 2. Sync Activities
                         var lastActivityDate = await context.Activities
                             .Where(a => a.AthleteId == athlete.Id)
                             .OrderByDescending(a => a.StartDate)

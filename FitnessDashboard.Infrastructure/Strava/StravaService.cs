@@ -1,5 +1,7 @@
 ﻿using FitnessDashboard.Application.Interfaces;
 using FitnessDashboard.Domain.Entities;
+using FitnessDashboard.Infrastructure.Configuration;
+using Microsoft.Extensions.Options;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 
@@ -8,10 +10,12 @@ namespace FitnessDashboard.Infrastructure.Strava;
 public class StravaService : IStravaService
 {
     private readonly HttpClient _httpClient;
+    private readonly StravaSettings _settings;
 
-    public StravaService(HttpClient httpClient)
+    public StravaService(HttpClient httpClient, IOptions<StravaSettings> settings)
     {
         _httpClient = httpClient;
+        _settings = settings.Value;
     }
 
     public async Task<IEnumerable<Activity>> GetActivitiesAsync(Athlete athlete, DateTime? after = null)
@@ -42,18 +46,92 @@ public class StravaService : IStravaService
 
     public async Task<IEnumerable<Gear>> GetAthleteGearsAsync(Athlete athlete)
     {
-        // Strava API doesn't have a simple "get all gears" endpoint, 
-        // usually gears are fetched via Athlete profile or individual gear ID.
-        // Simplified for this prototype.
-        return Enumerable.Empty<Gear>();
+        _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", athlete.AccessToken);
+        
+        // Strava API: GET https://www.strava.com/api/v3/athlete
+        // The athlete profile contains a list of bikes and shoes
+        var response = await _httpClient.GetFromJsonAsync<StravaAthleteProfileResponse>("athlete");
+        
+        var gears = new List<Gear>();
+        
+        if (response?.Bikes != null)
+        {
+            gears.AddRange(response.Bikes.Select(b => new Gear
+            {
+                Id = b.Id,
+                AthleteId = athlete.Id,
+                Name = b.Name,
+                TotalDistance = b.Distance,
+                IsPrimary = b.Primary
+            }));
+        }
+        
+        if (response?.Shoes != null)
+        {
+            gears.AddRange(response.Shoes.Select(s => new Gear
+            {
+                Id = s.Id,
+                AthleteId = athlete.Id,
+                Name = s.Name,
+                TotalDistance = s.Distance,
+                IsPrimary = s.Primary
+            }));
+        }
+        
+        return gears;
     }
 
     public async Task<Athlete> RefreshTokenAsync(Athlete athlete)
     {
-        // Implementation of OAuth token refresh would go here
+        // Strava OAuth token refresh: POST https://www.strava.com/oauth/token
+        // Params: client_id, client_secret, refresh_token, grant_type=refresh_token
+        
+        if (string.IsNullOrEmpty(_settings.ClientId) || string.IsNullOrEmpty(_settings.ClientSecret))
+        {
+            return athlete;
+        }
+
+        var response = await _httpClient.PostAsJsonAsync("https://www.strava.com/oauth/token", new
+        {
+            client_id = _settings.ClientId,
+            client_secret = _settings.ClientSecret,
+            refresh_token = athlete.RefreshToken,
+            grant_type = "refresh_token"
+        });
+
+        if (response.IsSuccessStatusCode)
+        {
+            var tokenResponse = await response.Content.ReadFromJsonAsync<StravaTokenResponse>();
+            if (tokenResponse != null)
+            {
+                athlete.AccessToken = tokenResponse.AccessToken;
+                athlete.RefreshToken = tokenResponse.RefreshToken;
+                athlete.TokenExpiresAt = DateTime.UtcNow.AddSeconds(tokenResponse.ExpiresIn);
+            }
+        }
+
         return athlete;
     }
 }
+
+public record StravaTokenResponse(
+    [property: JsonPropertyName("access_token")] string AccessToken,
+    [property: JsonPropertyName("refresh_token")] string RefreshToken,
+    [property: JsonPropertyName("expires_in")] int ExpiresIn
+);
+
+public record StravaAthleteProfileResponse(
+    [property: JsonPropertyName("id")] long Id,
+    [property: JsonPropertyName("bikes")] List<StravaGearResponse>? Bikes,
+    [property: JsonPropertyName("shoes")] List<StravaGearResponse>? Shoes
+);
+
+public record StravaGearResponse(
+    [property: JsonPropertyName("id")] string Id,
+    [property: JsonPropertyName("name")] string Name,
+    [property: JsonPropertyName("distance")] double Distance,
+    [property: JsonPropertyName("primary")] bool Primary
+);
 
 public record StravaActivityResponse(
     [property: JsonPropertyName("id")] long Id,

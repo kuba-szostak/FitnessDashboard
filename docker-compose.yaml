@@ -8,6 +8,11 @@
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Data Source=/app/data/fitnessdashboard.db
+      - Strava__ClientId=${STRAVA_CLIENT_ID}
+      - Strava__ClientSecret=${STRAVA_CLIENT_SECRET}
+      - Weather__ApiKey=${WEATHER_API_KEY}
+    env_file:
+      - .env
     volumes:
       - fitness-data:/app/data
     restart: always
