@@ -1,0 +1,16 @@
+﻿services:
+  fitness-dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Data Source=/app/data/fitnessdashboard.db
+    volumes:
+      - fitness-data:/app/data
+    restart: always
+
+volumes:
+  fitness-data:

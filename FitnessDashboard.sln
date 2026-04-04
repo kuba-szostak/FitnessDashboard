@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+#
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B95DCFF9-640A-4EE1-BD05-4A37DD7D5859}"
+	ProjectSection(SolutionItems) = preProject
+		compose.yaml = compose.yaml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FitnessDashboard.Api", "FitnessDashboard.Api\FitnessDashboard.Api.csproj", "{93C233EA-2466-4B52-81AD-D79998B0D5F5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FitnessDashboard.Application", "FitnessDashboard.Application\FitnessDashboard.Application.csproj", "{BEDFC37F-7769-40ED-9123-ED908E791E44}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FitnessDashboard.Domain", "FitnessDashboard.Domain\FitnessDashboard.Domain.csproj", "{FCD83E07-E3AB-4DBE-AE0F-3FCDC3CCA065}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FitnessDashboard.Infrastructure", "FitnessDashboard.Infrastructure\FitnessDashboard.Infrastructure.csproj", "{C36698CF-D904-4BFD-B5C8-DA48DA01C7E6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FitnessDashboard.Shared", "FitnessDashboard.Shared\FitnessDashboard.Shared.csproj", "{3FB69CC0-1867-46E2-BC0E-B6975D359A26}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FitnessDashboard.Client", "FitnessDashboard.Client\FitnessDashboard.Client.csproj", "{812977BA-BC12-4564-AEF7-60E56DD60791}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{93C233EA-2466-4B52-81AD-D79998B0D5F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93C233EA-2466-4B52-81AD-D79998B0D5F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93C233EA-2466-4B52-81AD-D79998B0D5F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93C233EA-2466-4B52-81AD-D79998B0D5F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEDFC37F-7769-40ED-9123-ED908E791E44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEDFC37F-7769-40ED-9123-ED908E791E44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEDFC37F-7769-40ED-9123-ED908E791E44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEDFC37F-7769-40ED-9123-ED908E791E44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FCD83E07-E3AB-4DBE-AE0F-3FCDC3CCA065}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FCD83E07-E3AB-4DBE-AE0F-3FCDC3CCA065}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FCD83E07-E3AB-4DBE-AE0F-3FCDC3CCA065}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FCD83E07-E3AB-4DBE-AE0F-3FCDC3CCA065}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C36698CF-D904-4BFD-B5C8-DA48DA01C7E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C36698CF-D904-4BFD-B5C8-DA48DA01C7E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C36698CF-D904-4BFD-B5C8-DA48DA01C7E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C36698CF-D904-4BFD-B5C8-DA48DA01C7E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3FB69CC0-1867-46E2-BC0E-B6975D359A26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FB69CC0-1867-46E2-BC0E-B6975D359A26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FB69CC0-1867-46E2-BC0E-B6975D359A26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FB69CC0-1867-46E2-BC0E-B6975D359A26}.Release|Any CPU.Build.0 = Release|Any CPU
+		{812977BA-BC12-4564-AEF7-60E56DD60791}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{812977BA-BC12-4564-AEF7-60E56DD60791}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{812977BA-BC12-4564-AEF7-60E56DD60791}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{812977BA-BC12-4564-AEF7-60E56DD60791}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
