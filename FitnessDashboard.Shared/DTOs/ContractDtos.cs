@@ -15,6 +15,7 @@ public record ActivityDto(
     string Type,
     DateTime StartDate,
     string? GearId
+    
 );
 
 public record GearDto(

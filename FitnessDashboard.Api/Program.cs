@@ -3,6 +3,7 @@ using FitnessDashboard.Application.Services;
 using FitnessDashboard.Infrastructure.Persistence;
 using FitnessDashboard.Infrastructure.Strava;
 using FitnessDashboard.Infrastructure.Sync;
+using FitnessDashboard.Infrastructure.Weather;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +21,11 @@ builder.Services.AddHostedService<StravaSyncWorker>();
 builder.Services.AddHttpClient<IStravaService, StravaService>(client =>
 {
     client.BaseAddress = new Uri("https://www.strava.com/api/v3/");
+});
+
+builder.Services.AddHttpClient<IWeatherService, WeatherService>(client => 
+{
+    client.BaseAddress = new Uri("https://api.openweathermap.org/data/3.0/");
 });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -61,7 +67,3 @@ app.MapFallbackToFile("index.html");
 
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

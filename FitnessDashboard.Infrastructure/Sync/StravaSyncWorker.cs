@@ -28,6 +28,7 @@ public class StravaSyncWorker : BackgroundService
             {
                 var context = scope.ServiceProvider.GetRequiredService<IAppDbContext>();
                 var stravaService = scope.ServiceProvider.GetRequiredService<IStravaService>();
+                var weatherService = scope.ServiceProvider.GetRequiredService<IWeatherService>();
                 var maintenanceService = scope.ServiceProvider.GetRequiredService<IGearMaintenanceService>();
 
                 List<Domain.Entities.Athlete> athletes;
@@ -60,12 +61,15 @@ public class StravaSyncWorker : BackgroundService
                             {
                                 context.Activities.Add(activity);
 
+                                var (condition, multiplier) =
+                                    await weatherService.GetWearFactorAsync(activity.StartDate);
+
                                 if (!string.IsNullOrEmpty(activity.GearId))
                                 {
                                     var gear = await context.Gears.FirstOrDefaultAsync(g => g.Id == activity.GearId, stoppingToken);
                                     if (gear != null)
                                     {
-                                        gear.TotalDistance += activity.Distance;
+                                        gear.TotalDistance += (activity.Distance * multiplier);
                                     }
                                 }
                             }

@@ -13,4 +13,9 @@ public class Activity
 
     public Athlete Athlete { get; set; } = null!;
     public Gear? Gear { get; set; }
+    
+    public string? WeatherCondition { get; set; }
+    
+    public double WearMultiplier { get; set; } = 1.0;
+    
 }
