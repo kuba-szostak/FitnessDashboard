@@ -44,7 +44,9 @@ public class StravaService : IStravaService
             MovingTime = r.MovingTime,
             Type = r.Type,
             StartDate = r.StartDate,
-            GearId = r.GearId
+            GearId = r.GearId,
+            StartLatitude = r.StartLatLng?.Length >= 2 ? r.StartLatLng[0] : null,
+            StartLongitude = r.StartLatLng?.Length >= 2 ? r.StartLatLng[1] : null
         }) ?? Enumerable.Empty<Activity>();
     }
 
@@ -196,5 +198,6 @@ public record StravaActivityResponse(
     [property: JsonPropertyName("moving_time")] int MovingTime,
     [property: JsonPropertyName("type")] string Type,
     [property: JsonPropertyName("start_date")] DateTime StartDate,
-    [property: JsonPropertyName("gear_id")] string? GearId
+    [property: JsonPropertyName("gear_id")] string? GearId,
+    [property: JsonPropertyName("start_latlng")] double[]? StartLatLng
 );

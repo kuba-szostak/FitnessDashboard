@@ -81,7 +81,10 @@ public class StravaSyncWorker : BackgroundService
                                 context.Activities.Add(activity);
 
                                 var (condition, multiplier) =
-                                    await weatherService.GetWearFactorAsync(activity.StartDate);
+                                    await weatherService.GetWearFactorAsync(activity.StartDate, activity.StartLatitude, activity.StartLongitude);
+
+                                activity.WeatherCondition = condition;
+                                activity.WearMultiplier = multiplier;
 
                                 if (!string.IsNullOrEmpty(activity.GearId))
                                 {

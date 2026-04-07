@@ -10,6 +10,8 @@ public class Activity
     public string Type { get; set; } = string.Empty;
     public DateTime StartDate { get; set; }
     public string? GearId { get; set; } // Strava Gear ID
+    public double? StartLatitude { get; set; }
+    public double? StartLongitude { get; set; }
 
     public Athlete Athlete { get; set; } = null!;
     public Gear? Gear { get; set; }
