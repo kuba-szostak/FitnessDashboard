@@ -55,6 +55,7 @@ builder.Services.AddScoped<IAppDbContext>(provider => provider.GetRequiredServic
 
 builder.Services.AddScoped<IStravaService, StravaService>();
 builder.Services.AddScoped<IGearMaintenanceService, GearMaintenanceService>();
+builder.Services.AddScoped<ISyncService, SyncService>();
 builder.Services.AddHostedService<StravaSyncWorker>();
 builder.Services.AddHttpClient<IStravaService, StravaService>(client =>
 {

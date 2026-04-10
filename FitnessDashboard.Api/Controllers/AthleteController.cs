@@ -14,12 +14,14 @@ public class AthleteController : ControllerBase
 {
     private readonly AppDbContext _context;
     private readonly IStravaService _stravaService;
+    private readonly ISyncService _syncService;
     private readonly StravaSettings _settings;
 
-    public AthleteController(AppDbContext context, IStravaService stravaService, IOptions<StravaSettings> settings)
+    public AthleteController(AppDbContext context, IStravaService stravaService, ISyncService syncService, IOptions<StravaSettings> settings)
     {
         _context = context;
         _stravaService = stravaService;
+        _syncService = syncService;
         _settings = settings.Value;
     }
 
@@ -58,6 +60,18 @@ public class AthleteController : ControllerBase
             }
 
             await _context.SaveChangesAsync();
+            
+            // Trigger immediate sync
+            try
+            {
+                await _syncService.SyncAthleteDataAsync(athlete);
+            }
+            catch (Exception syncEx)
+            {
+                // Log sync error but don't fail the exchange process
+                Console.WriteLine($"Initial sync failed: {syncEx.Message}");
+            }
+
             return Ok(athlete);
         }
         catch (Exception ex)
