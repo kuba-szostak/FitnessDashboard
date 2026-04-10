@@ -99,4 +99,27 @@ public class AthleteController : ControllerBase
         await _context.SaveChangesAsync();
         return Ok(athlete);
     }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Logout(long id)
+    {
+        var athlete = await _context.Athletes
+            .Include(a => a.Activities)
+            .Include(a => a.Gears)
+            .FirstOrDefaultAsync(a => a.Id == id);
+
+        if (athlete == null)
+        {
+            return NotFound();
+        }
+
+        // Remove everything associated with this athlete
+        _context.Activities.RemoveRange(athlete.Activities);
+        _context.Gears.RemoveRange(athlete.Gears);
+        _context.Athletes.Remove(athlete);
+
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
 }

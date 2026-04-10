@@ -38,6 +38,10 @@
                         <MudText Typo="@Typo.h6">@a.FirstName @a.LastName</MudText>
                         <MudText Typo="@Typo.caption">ID: @a.Id</MudText>
                     </div>
+                    <MudSpacer />
+                    <MudButton Variant="@Variant.Outlined" Color="@Color.Error" StartIcon="@Icons.Material.Filled.Logout" OnClick="@(() => Logout(a.Id))">
+                        Disconnect
+                    </MudButton>
                 </div>
             </MudCardContent>
         </MudCard>
@@ -48,7 +52,7 @@
     private bool success;
     private MudForm form;
     private Athlete athlete = new Athlete();
-    private List<Athlete> athletes;
+    private List<Athlete>? athletes;
 
     protected override async Task OnInitializedAsync()
     {
@@ -64,6 +68,27 @@
         catch (Exception ex)
         {
             Console.WriteLine(ex.Message);
+        }
+    }
+
+    private async Task Logout(long id)
+    {
+        try
+        {
+            var response = await Http.DeleteAsync($"api/Athlete/{id}");
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Account disconnected successfully.", Severity.Success);
+                await LoadAthletes();
+            }
+            else
+            {
+                Snackbar.Add("Error disconnecting account.", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error disconnecting account: {ex.Message}", Severity.Error);
         }
     }
 
