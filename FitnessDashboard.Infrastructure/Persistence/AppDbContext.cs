@@ -13,7 +13,6 @@ public class AppDbContext : DbContext, IAppDbContext
     public DbSet<Athlete> Athletes { get; set; } = null!;
     public DbSet<Activity> Activities { get; set; } = null!;
     public DbSet<Gear> Gears { get; set; } = null!;
-    public DbSet<MaintenanceTask> MaintenanceTasks { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -43,14 +42,6 @@ public class AppDbContext : DbContext, IAppDbContext
             entity.HasOne(a => a.Gear)
                   .WithMany(g => g.Activities)
                   .HasForeignKey(a => a.GearId);
-        });
-
-        modelBuilder.Entity<MaintenanceTask>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.HasOne(m => m.Gear)
-                  .WithMany(g => g.MaintenanceTasks)
-                  .HasForeignKey(m => m.GearId);
         });
     }
 }

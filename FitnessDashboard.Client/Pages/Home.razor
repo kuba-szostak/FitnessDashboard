@@ -20,32 +20,13 @@ else
         <HeaderContent>
             <MudTh>Name</MudTh>
             <MudTh>Distance (km)</MudTh>
-            <MudTh>Primary</MudTh>
-            <MudTh>Maintenance Tasks</MudTh>
+            <MudTh>Status</MudTh>
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Name">@context.Name</MudTd>
             <MudTd DataLabel="Distance">@(Math.Round(context.TotalDistance / 1000.0, 2))</MudTd>
-            <MudTd DataLabel="Primary">
-                @if (context.IsPrimary)
-                {
-                    <MudIcon Icon="@Icons.Material.Filled.Check" Color="@Color.Success" />
-                }
-            </MudTd>
-            <MudTd DataLabel="Maintenance Tasks">
-                @if (context.MaintenanceTasks != null && context.MaintenanceTasks.Any())
-                {
-                    <MudChipSet T="string">
-                        @foreach (var task in context.MaintenanceTasks)
-                        {
-                            <MudChip Color="@GetStatusColor(task.Status)">@task.Description</MudChip>
-                        }
-                    </MudChipSet>
-                }
-                else
-                {
-                    <MudText Typo="@Typo.body2">No tasks</MudText>
-                }
+            <MudTd DataLabel="Maintenance Status">
+                <MudChip T="string" Color="@GetStatusColor(context.Status)" Variant="Variant.Filled">@(GetStatusText(context.Status))</MudChip>
             </MudTd>
         </RowTemplate>
     </MudTable>
@@ -70,6 +51,19 @@ else
         {
             _loading = false;
         }
+    }
+
+    private string GetStatusText(string? status)
+    {
+        if (string.IsNullOrEmpty(status)) return "Unknown";
+        return status switch
+        {
+            "Healthy" => "Healthy",
+            "ServiceRequired" => "Service Required",
+            "Warning" => "Warning",
+            "Critical" => "Critical",
+            _ => status
+        };
     }
 
     private Color GetStatusColor(string? status)

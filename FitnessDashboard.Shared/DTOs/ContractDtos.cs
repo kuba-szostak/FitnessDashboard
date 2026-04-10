@@ -23,14 +23,7 @@ public record GearDto(
     string Name,
     double TotalDistance,
     bool IsPrimary,
-    List<MaintenanceTaskDto> MaintenanceTasks
-);
-
-public record MaintenanceTaskDto(
-    Guid Id,
-    string GearId,
-    string Description,
-    double IntervalMeters,
-    double LastServiceMeters,
     string Status
 );
+
+

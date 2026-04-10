@@ -9,6 +9,15 @@ public class Gear
     public bool IsPrimary { get; set; }
     
     public Athlete Athlete { get; set; } = null!;
-    public ICollection<MaintenanceTask> MaintenanceTasks { get; set; } = new List<MaintenanceTask>();
+    
+    public MaintenanceStatus Status { get; set; }
     public ICollection<Activity> Activities { get; set; } = new List<Activity>();
 }
+
+public enum MaintenanceStatus
+{
+    Healthy,
+    ServiceRequired,
+    Critical
+}
+

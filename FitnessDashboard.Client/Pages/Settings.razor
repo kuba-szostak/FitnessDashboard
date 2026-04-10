@@ -16,21 +16,6 @@
             Log in with Strava
         </MudButton>
     </div>
-
-    <MudDivider Class="my-4" />
-
-    <MudText Typo="@Typo.subtitle2" Class="mt-4">Manual Configuration (Test only)</MudText>
-    <MudForm @ref="form" @bind-IsValid="@success">
-        <MudTextField T="long" Label="Strava Athlete ID" @bind-Value="athlete.Id" Required="true" />
-        <MudTextField T="string" Label="First Name" @bind-Value="athlete.FirstName" Required="true" />
-        <MudTextField T="string" Label="Last Name" @bind-Value="athlete.LastName" Required="true" />
-        <MudTextField T="string" Label="Access Token" @bind-Value="athlete.AccessToken" Required="true" HelperText="Obtain from Strava API Settings" />
-        <MudTextField T="string" Label="Refresh Token" @bind-Value="athlete.RefreshToken" Required="false" />
-        
-        <div class="d-flex align-center justify-space-between mt-6">
-            <MudButton Variant="@Variant.Filled" Color="@Color.Secondary" Disabled="@(!success)" OnClick="SaveAthlete">Save & Sync</MudButton>
-        </div>
-    </MudForm>
 </MudPaper>
 
 @if (athletes != null && athletes.Any())
