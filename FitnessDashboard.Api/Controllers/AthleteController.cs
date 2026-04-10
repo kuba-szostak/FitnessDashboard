@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using FitnessDashboard.Application.Interfaces;
 using FitnessDashboard.Infrastructure.Configuration;
 using Microsoft.Extensions.Options;
+using FitnessDashboard.Shared.DTOs;
 
 namespace FitnessDashboard.Api.Controllers;
 
@@ -26,9 +27,16 @@ public class AthleteController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Athlete>>> GetAthletes()
+    public async Task<ActionResult<IEnumerable<AthleteDto>>> GetAthletes()
     {
-        return await _context.Athletes.ToListAsync();
+        return await _context.Athletes
+            .Select(a => new AthleteDto(
+                a.Id,
+                a.FirstName,
+                a.LastName,
+                a.ProfileImageUrl
+            ))
+            .ToListAsync();
     }
 
     [HttpGet("auth-url")]

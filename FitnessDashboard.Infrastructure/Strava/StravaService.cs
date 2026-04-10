@@ -150,7 +150,9 @@ public class StravaService : IStravaService
             Id = exchangeResponse.Athlete.Id,
             FirstName = exchangeResponse.Athlete.FirstName,
             LastName = exchangeResponse.Athlete.LastName,
-            ProfileImageUrl = exchangeResponse.Athlete.Profile,
+            ProfileImageUrl = string.IsNullOrEmpty(exchangeResponse.Athlete.Profile) || exchangeResponse.Athlete.Profile.Contains("avatar/athlete/large.png") || exchangeResponse.Athlete.Profile.Contains("avatar/athlete/medium.png") 
+                ? null 
+                : exchangeResponse.Athlete.Profile,
             AccessToken = exchangeResponse.AccessToken,
             RefreshToken = exchangeResponse.RefreshToken,
             TokenExpiresAt = DateTime.UtcNow.AddSeconds(exchangeResponse.ExpiresIn)

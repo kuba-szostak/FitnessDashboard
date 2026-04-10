@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-#
+# 
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B95DCFF9-640A-4EE1-BD05-4A37DD7D5859}"
 	ProjectSection(SolutionItems) = preProject
 		compose.yaml = compose.yaml
@@ -17,6 +17,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FitnessDashboard.Shared", "FitnessDashboard.Shared\FitnessDashboard.Shared.csproj", "{3FB69CC0-1867-46E2-BC0E-B6975D359A26}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FitnessDashboard.Client", "FitnessDashboard.Client\FitnessDashboard.Client.csproj", "{812977BA-BC12-4564-AEF7-60E56DD60791}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FitnessDashboard.Application.Tests", "FitnessDashboard.Application.Tests\FitnessDashboard.Application.Tests.csproj", "{9B9EA8B2-4258-4C21-8F4D-8035BF443137}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,5 +50,9 @@ Global
 		{812977BA-BC12-4564-AEF7-60E56DD60791}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{812977BA-BC12-4564-AEF7-60E56DD60791}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{812977BA-BC12-4564-AEF7-60E56DD60791}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B9EA8B2-4258-4C21-8F4D-8035BF443137}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B9EA8B2-4258-4C21-8F4D-8035BF443137}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B9EA8B2-4258-4C21-8F4D-8035BF443137}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B9EA8B2-4258-4C21-8F4D-8035BF443137}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -15,6 +15,15 @@ A Blazor WebAssembly application designed to help athletes track the maintenance
 - Strava API Credentials (Client ID and Client Secret from [Strava My App](https://www.strava.com/settings/api))
 - OpenWeatherMap API Key (from [OpenWeatherMap](https://openweathermap.org/api))
 
+## Running Tests
+The project includes unit tests for the application logic. To run the tests, use the following command:
+```bash
+dotnet test
+```
+The test suite covers:
+- **Gear Maintenance Status Calculation**: Verifies that gear status is correctly assigned based on distance thresholds.
+- **Data Synchronization**: Ensures that gear and activities are correctly processed from Strava, including the application of weather-based wear multipliers.
+
 ## Setup & Configuration
 
 ### 1. Environment Variables

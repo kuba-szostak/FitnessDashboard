@@ -52,7 +52,7 @@
     private bool success;
     private MudForm form;
     private Athlete athlete = new Athlete();
-    private List<Athlete>? athletes;
+    private List<AthleteDto>? athletes;
 
     protected override async Task OnInitializedAsync()
     {
@@ -63,7 +63,7 @@
     {
         try
         {
-            athletes = await Http.GetFromJsonAsync<List<Athlete>>("api/Athlete");
+            athletes = await Http.GetFromJsonAsync<List<AthleteDto>>("api/Athlete");
         }
         catch (Exception ex)
         {
